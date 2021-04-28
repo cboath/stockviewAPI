@@ -38,14 +38,15 @@ else
 fi
 
 mkdir -p dist/${1}/src
+mkdir -p dist/${1}/stage
 
 echo "Copying template to S3 bucket"
-aws s3 cp devopsclass.yaml s3://$BUCKET_NAME/${1}/devopsclass.yaml
-cp devopsclass.yaml dist/$1/devopsclass.yaml
+aws s3 cp cloudformation.yaml s3://$BUCKET_NAME/${1}/cloudformation.yaml
+cp cloudformation.yaml dist/$1/cloudformation.yaml
 
 echo "Copying Parameters to S3 bucket"
-aws s3 cp parameters/dudoc.json s3://$BUCKET_NAME/${1}/dudoc.json
-cp parameters/dudoc.json dist/$1/dudoc.json
+aws s3 cp parameters/stocks.json s3://$BUCKET_NAME/${1}/stocks.json
+cp parameters/stocks.json dist/$1/stocks.json
 
 #Prepare Lambda
 rm -rf dist/${1}/src/*

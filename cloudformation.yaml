@@ -104,42 +104,41 @@ Resources:
       RestApiId: !Ref PortfolioApiGateway
 
   # Create API Stage
-  DUDOCNonProd:
+  StockNonProd:
     Type: AWS::ApiGateway::Stage
     DependsOn: PortfolioApiGateway
     Properties:
       StageName: "NonProd"
-      Description: "Non Prod stage for DUDOC Api Gateway"
+      Description: "Non Prod stage for Stocks Api Gateway"
       RestApiId: !Ref PortfolioApiGateway
-      DeploymentId: !Ref DUDOCApiDeployment
-
+      DeploymentId: !Ref StockApiDeployment
 
   # Create Database table
-  DUClassTable:
+  PortfolioTable:
     Type: AWS::DynamoDB::Table
     Properties:
       AttributeDefinitions:
-        - AttributeName: "EmployeeId"
+        - AttributeName: "TradeID"
           AttributeType: "N"
       KeySchema:
-        - AttributeName: "EmployeeId"
+        - AttributeName: "TradeID"
           KeyType: "HASH"
       ProvisionedThroughput:
         ReadCapacityUnits: 10
         WriteCapacityUnits: 10
-      TableName: DuClassUsers
+      TableName: positions
 
 # Create lambda 
-  DuGetLambda:
+  StockGetLambda:
     Type: AWS::Lambda::Function 
     Properties:
-      FunctionName: DuGetLambda
+      FunctionName: StockGetLambda
       Role: !GetAtt DUClassLambdaRole.Arn
-      Handler: index.lambdaHandler
-      Runtime: nodejs10.x
+      Handler: index.lambda_Handler
+      Runtime: python3.8
       Code:
         S3Bucket: !Ref deploybucket
-        S3Key: !Sub "${apiRelease}/lambda-src/DuGetLambda.zip"
+        S3Key: !Sub "${apiRelease}/lambda-src/StockGetLambda.zip"
       Environment:
         Variables:
           DB_HOST: !Ref "mappingDbHost"
@@ -147,9 +146,9 @@ Resources:
 
 
 # Lambda Permission For API GateWay
-  lambdaApiGatewayInvokeGetStudents:
+  lambdaApiGatewayInvokeGetStocks:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !Ref "DuGetLambda"
+      FunctionName: !Ref "StockGetLambda"
       Principal: "apigateway.amazonaws.com"

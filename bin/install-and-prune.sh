@@ -5,13 +5,21 @@ cd src
 WRKIT=$(pwd)
 for dir in */; do
     echo $dir
-    cd $dir
-    npm install --production=true
-    npm prune --production=true  
+    cd $dir 
+    mkdir $HMWRK/dist/${1}/src/$dir
     TREE=$HMWRK/dist/${1}/src/$dir
+    STAGE=$HMWRK/dist/${1}/stage
+    cp ./* $TREE
+    cd package
+    cp -r ./* $TREE
     TRIMMER=$(echo $TREE | sed 's:/*$::')
+    cd $TREE
+    cd ..
     7z a -r $TRIMMER.zip
+    cp *.zip $STAGE
+    rm *.*
+    rm -rf $TREE
+    cd ..
     cd ..
 done
-
 exit 0

@@ -2,6 +2,6 @@ STACK_NAME=DaughertyDevOpsClass
 
 PARAMETERS="PARAMS"
 
-BUCKET_NAME=teaterdevbucketops
+BUCKET_NAME=teaterstockbucket
 
 TAGS=TAGSNSMAE

@@ -5,6 +5,6 @@
     },
     {
         "ParameterKey": "deploybucket",
-        "ParameterValue": "teaterdevbucketops"
+        "ParameterValue": "teaterstockbucket"
     }
 ]
