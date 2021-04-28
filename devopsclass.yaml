@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  mappingDbHost:
+    Type: String
+    Default: portfolioData
+  apiRelease:
+    Type: String
+  deploybucket:
+    Type: String
+
+Resources: 
+  # Create a role
+  PortfolioLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Description: "Role for performing functions on the site"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+      RoleName: "PortfolioLambdaRole"  
+
+  # Create API gateway
+  PortfolioApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: PortfolioApiGateway
+      Parameters:
+        endpointConfigurationTypes: EDGE
+
+  # Create API Gateway Resource
+  DuResource:  
+    Type: 'AWS::ApiGateway::Resource'
+    DependsOn: PortfolioApiGateway
+    Properties:
+      RestApiId: !Ref "PortfolioApiGateway"
+      ParentId: !GetAtt
+        - PortfolioApiGateway
+        - RootResourceId
+      PathPart: positions 
+
+  # Create API Gateway Methods
+  stocksGetMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      AuthorizationType: "NONE"
+      HttpMethod: "GET"
+      OperationName: "GetStocks"
+      Integration:
+        IntegrationHttpMethod: "POST"
+        Type: "AWS_PROXY"
+        Uri: !Sub
+          - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
+          - lambdaArn: !GetAtt "StockLambda.Arn"
+      RestApiId: !Ref PortfolioApiGateway
+      ResourceId: !Ref StockResource
+
+  # Create API Gateway Method Options
+  StockResourceOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref "PortfolioApiGateway"
+      ResourceId: !Ref "StockResource"
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: "200"
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: "200"
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+
+  # Create API Deployment
+  StockApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - "stocksGetMethod"
+    Properties:
+      RestApiId: !Ref PortfolioApiGateway
+
+  # Create API Stage
+  DUDOCNonProd:
+    Type: AWS::ApiGateway::Stage
+    DependsOn: PortfolioApiGateway
+    Properties:
+      StageName: "NonProd"
+      Description: "Non Prod stage for DUDOC Api Gateway"
+      RestApiId: !Ref PortfolioApiGateway
+      DeploymentId: !Ref DUDOCApiDeployment
+
+
+  # Create Database table
+  DUClassTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "EmployeeId"
+          AttributeType: "N"
+      KeySchema:
+        - AttributeName: "EmployeeId"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      TableName: DuClassUsers
+
+# Create lambda 
+  DuGetLambda:
+    Type: AWS::Lambda::Function 
+    Properties:
+      FunctionName: DuGetLambda
+      Role: !GetAtt DUClassLambdaRole.Arn
+      Handler: index.lambdaHandler
+      Runtime: nodejs10.x
+      Code:
+        S3Bucket: !Ref deploybucket
+        S3Key: !Sub "${apiRelease}/lambda-src/DuGetLambda.zip"
+      Environment:
+        Variables:
+          DB_HOST: !Ref "mappingDbHost"
+      Timeout: 60
+
+
+# Lambda Permission For API GateWay
+  lambdaApiGatewayInvokeGetStudents:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref "DuGetLambda"
+      Principal: "apigateway.amazonaws.com"
