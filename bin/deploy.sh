@@ -55,7 +55,7 @@ rm -rf dist/${1}/src/*
 printf "\n ${GREEN}${SMILE} All functions packaged!${NC}\n\n"
 
 #Copy Lambdas
-aws s3 cp --recursive --exclude "*.DS*" dist/${1}/src s3://${BUCKET_NAME}/${1}/lambda-src/
+aws s3 cp --recursive --exclude "*.DS*" dist/${1}/stage s3://${BUCKET_NAME}/${1}/lambda-src/
 
 echo "Deploying stack ${STACK_NAME}"
 ./bin/deploy/deploy-stack.sh $1

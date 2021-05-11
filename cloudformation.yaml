@@ -39,7 +39,7 @@ Resources:
         endpointConfigurationTypes: EDGE
 
   # Create API Gateway Resource
-  DuResource:  
+  StockResource:  
     Type: 'AWS::ApiGateway::Resource'
     DependsOn: PortfolioApiGateway
     Properties:
@@ -61,7 +61,7 @@ Resources:
         Type: "AWS_PROXY"
         Uri: !Sub
           - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
-          - lambdaArn: !GetAtt "StockLambda.Arn"
+          - lambdaArn: !GetAtt "StockGetLambda.Arn"
       RestApiId: !Ref PortfolioApiGateway
       ResourceId: !Ref StockResource
 
@@ -133,12 +133,12 @@ Resources:
     Type: AWS::Lambda::Function 
     Properties:
       FunctionName: StockGetLambda
-      Role: !GetAtt DUClassLambdaRole.Arn
-      Handler: index.lambda_Handler
+      Role: !GetAtt PortfolioLambdaRole.Arn
+      Handler: lambda_function.lambda_handler
       Runtime: python3.8
       Code:
         S3Bucket: !Ref deploybucket
-        S3Key: !Sub "${apiRelease}/lambda-src/StockGetLambda.zip"
+        S3Key: !Sub "${apiRelease}/lambda-src/stockGet.zip"
       Environment:
         Variables:
           DB_HOST: !Ref "mappingDbHost"

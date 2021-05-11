@@ -1,0 +1,109 @@
+{
+  "positions": [
+    {
+      "PutRequest": {
+        "Item": {
+          "TradeID": {
+            "N": "1"
+          },
+          "ticker": {
+            "S": "CIM"
+          },
+          "tradetype": {
+            "S": "B"
+          },
+          "quantity": {
+            "N": "20"
+          },
+          "price": {
+            "N": "100"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "TradeID": {
+            "N": "2"
+          },
+          "ticker": {
+            "S": "ATVI"
+          },
+          "tradetype": {
+            "S": "B"
+          },
+          "quantity": {
+            "N": "3"
+          },
+          "price": {
+            "N": "73.47"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "TradeID": {
+            "N": "3"
+          },
+          "ticker": {
+            "S": "SQ"
+          },
+          "tradetype": {
+            "S": "B"
+          },
+          "quantity": {
+            "N": "2"
+          },
+          "price": {
+            "N": "87.87"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "TradeID": {
+            "N": "4"
+          },
+          "ticker": {
+            "S": "CRBP"
+          },
+          "tradetype": {
+            "S": "B"
+          },
+          "quantity": {
+            "N": "7"
+          },
+          "price": {
+            "N": "2.41"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "TradeID": {
+            "N": "5"
+          },
+          "ticker": {
+            "S": "BIO"
+          },
+          "tradetype": {
+            "S": "B"
+          },
+          "quantity": {
+            "N": ".07857"
+          },
+          "price": {
+            "N": "636.30"
+          }
+        }
+      }
+    }
+  ]
+}

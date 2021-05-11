@@ -14,11 +14,11 @@ for dir in */; do
     cp -r ./* $TREE
     TRIMMER=$(echo $TREE | sed 's:/*$::')
     cd $TREE
-    cd ..
     7z a -r $TRIMMER.zip
+    cd ..
     cp *.zip $STAGE
-    rm *.*
-    rm -rf $TREE
+    # rm *.*
+    # rm -rf $TREE
     cd ..
     cd ..
 done
