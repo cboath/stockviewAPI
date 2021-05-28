@@ -13,18 +13,10 @@ ts = TimeSeries(key='D3F0HVMFLMPCVLRN')
 import sys
 import json
 
-headers = {
-    "X-Requested-With": "*",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers":
-      "Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with",
-    "Access-Control-Allow-Methods": "PUT,POST,GET,OPTIONS",
-}
-statusCode = 0
-body = []
 
 def lambda_handler(event, context):
     bunch = []
+
     with open('list.txt', 'r') as stocks:
         for x in stocks:
             currentSym = x.rstrip()
@@ -43,8 +35,13 @@ def lambda_handler(event, context):
             igor = [x, currstock]
             print('IGOR', igor)
             bunch.insert(0, igor)
-    nbv = bunch #{x, currstock}
-    #bodyval = json.dumps(nbv)
-    #print('NEW BUNCH', bodyval)
-    return nbv
-            
+    nbv = bunch
+    bodyval = json.dumps(nbv)
+    resp = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+        },
+        "body": bodyval
+    }
+    return resp
