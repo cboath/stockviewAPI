@@ -4,8 +4,11 @@ HMWRK=$(pwd)
 cd src
 WRKIT=$(pwd)
 for dir in */; do
+    cd $HMWRK/src/$dir 
+    echo "*******************"
+    echo $(pwd)
+    echo "*******************"
     echo $dir
-    cd $dir 
     mkdir $HMWRK/dist/${1}/src/$dir
     TREE=$HMWRK/dist/${1}/src/$dir
     STAGE=$HMWRK/dist/${1}/stage

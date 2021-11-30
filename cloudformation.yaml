@@ -144,6 +144,36 @@ Resources:
           DB_HOST: !Ref "mappingDbHost"
       Timeout: 60
 
+  StockValueLambda:
+    Type: AWS::Lambda::Function 
+    Properties:
+      FunctionName: StockValueLambda
+      Role: !GetAtt PortfolioLambdaRole.Arn
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref deploybucket
+        S3Key: !Sub "${apiRelease}/lambda-src/getCurrentStockValue.zip"
+      Environment:
+        Variables:
+          DB_HOST: !Ref "mappingDbHost"
+      Timeout: 60
+
+  StockTableLambda:
+    Type: AWS::Lambda::Function 
+    Properties:
+      FunctionName: StockTableLambda
+      Role: !GetAtt PortfolioLambdaRole.Arn
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      Code:
+        S3Bucket: !Ref deploybucket
+        S3Key: !Sub "${apiRelease}/lambda-src/getStocksFromTable.zip"
+      Environment:
+        Variables:
+          DB_HOST: !Ref "mappingDbHost"
+      Timeout: 60
+
 
 # Lambda Permission For API GateWay
   lambdaApiGatewayInvokeGetStocks:
